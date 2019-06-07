@@ -33,12 +33,12 @@ class DOMEmitter {
     }
 }
 func render(view: Any, emitter: DOMEmitter) {
-    print("Rendering", view)
+    //print("Rendering", view)
     if String(describing: view) == "nil" {
         return
     }
     let className = classNameRemovingGenerics(view)
-    print(_typeName(type(of: view), qualified: true))
+    //print(_typeName(type(of: view), qualified: true))
     switch className {
         case "HStack":
             emitter.emit("div", ["class": "marina-hstack"])
@@ -61,7 +61,7 @@ func render(view: Any, emitter: DOMEmitter) {
             emitter.text(v.getContent() as! String)
             emitter.close("div")
         case "TupleView":
-            print("TupleView")
+            //print("TupleView")
             let v = view as! MarinaTupleViewAccess
             let content = v.getContent()
             let mirror = Mirror(reflecting: content)
@@ -71,13 +71,16 @@ func render(view: Any, emitter: DOMEmitter) {
                 }
             }
         case "ConditionalContent":
-            print("ConditionalContent")
+            //print("ConditionalContent")
             let v = view as! MarinaConditionalContentAccess
             render(view: v.getContent(), emitter: emitter)
+        case "Image":
+            let v = view as! MarinaImageAccess
+            emitter.emit("img", ["class": "marina-text", "src": v.getContent() as! String])
         case "EmptyView":
             do {}
         default:
-            print("Unsupported view type: " + className)
+            //print("Unsupported view type: " + className)
             let v = view as! MarinaViewBodyAccessor
             render(view: v.getBody(), emitter: emitter)
     }

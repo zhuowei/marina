@@ -211,27 +211,21 @@ enum RenderingMode {
     case automatic
 }
 
-struct Image: View {
+protocol MarinaImageAccess: MarinaViewContentAccessor {
+}
+
+struct Image: View, MarinaImageAccess {
     var body:Never {
         fatalError("Image has no body")
     }
+    var content:String
     init(url: String, label: Text) {
+        self.content = url
     }
     func renderingMode(_ renderingMode: RenderingMode) -> Image {
         return self
     }
-}
-
-struct MarinaDemo : View {
-    var body: some View {
-        HStack {
-            Text("Oh hello")
-            Text("This doesn't work")
-            if true {
-                Text("Oh hey")
-            } else {
-                //Text("Not true")
-            }
-        }
+    func getContent() -> Any {
+        return content
     }
 }
