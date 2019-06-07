@@ -26,6 +26,10 @@ protocol MarinaViewContentAccessor {
 protocol MarinaTextAccess: MarinaViewContentAccessor {
 }
 
+struct Color {
+    static let primary = Color()
+}
+
 struct Text : View, MarinaTextAccess {
     var content:String
     var body:Never {
@@ -36,6 +40,9 @@ struct Text : View, MarinaTextAccess {
     }
     func getContent() -> Any {
         return content
+    }
+    func color(_ color: Color?) -> Text {
+        return self
     }
 }
 
@@ -125,12 +132,17 @@ struct HStack<Content> : View, MarinaHStackAccess where Content: View {
 protocol MarinaVStackAccess : MarinaViewContentAccessor {
 }
 
+struct HorizontalAlignment {
+    static let center = HorizontalAlignment()
+    static let leading = HorizontalAlignment()
+}
+
 struct VStack<Content> : View, MarinaVStackAccess where Content: View {
     var body:Never {
         fatalError("VStack has no body")
     }
     var content:Content
-    init(@ViewBuilder content: () -> Content) {
+    init(alignment: HorizontalAlignment = .center, @ViewBuilder content: () -> Content) {
         self.content = content()
     }
     func getContent() -> Any {
@@ -151,6 +163,62 @@ struct ZStack<Content> : View, MarinaHStackAccess where Content: View {
     }
     func getContent() -> Any {
         return content
+    }
+}
+
+protocol MarinaScrollViewAccess: MarinaViewContentAccessor {
+}
+
+struct ScrollView<Content>: View, MarinaScrollViewAccess where Content: View {
+    var body:Never {
+        fatalError("ScrollView has no body")
+    }
+    var content:Content
+    init(showsHorizontalIndicator: Bool = true, @ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+    func getContent() -> Any {
+        return content
+    }
+}
+
+protocol Identifiable {
+    associatedtype ID: Hashable
+    associatedtype IdentifiedValue = Self
+}
+
+struct ForEach<Data, Content> : View where Data : RandomAccessCollection, Content : View, Data.Element : Identifiable {
+    var body:Never {
+        fatalError("ForEach has no body")
+    }
+    var data: Data
+    var content: (Data.Element.IdentifiedValue) -> Content
+    init(_ data: Data, content: @escaping (Data.Element.IdentifiedValue) -> Content) {
+        self.data = data
+        self.content = content
+    }
+}
+
+struct NavigationButton<Label, Destination> : View where Label : View, Destination : View {
+    var body:Never {
+        fatalError("NavigationButton has no body")
+    }
+    init(destination: Destination, isDetail: Bool = true, onTrigger: @escaping () -> Bool = { true }, label: () -> Label) {
+    }
+}
+
+enum RenderingMode {
+    case automatic
+}
+
+struct Image: View {
+    var body:Never {
+        fatalError("Image has no body")
+    }
+    init(url: String, label: Text) {
+    }
+    func renderingMode(_ renderingMode: RenderingMode) -> Image {
+        return self
     }
 }
 
