@@ -1,4 +1,8 @@
-protocol View {
+protocol MarinaViewBodyAccessor {
+    func getBody() -> Any
+}
+
+protocol View: MarinaViewBodyAccessor {
     associatedtype Body: View
     var body: Body { get }
 }
@@ -9,6 +13,12 @@ extension Never : View {
     }
 }
 
+extension View {
+    func getBody() -> Any {
+        return body
+    }
+}
+
 protocol MarinaViewContentAccessor {
     func getContent() -> Any
 }
@@ -16,7 +26,7 @@ protocol MarinaViewContentAccessor {
 protocol MarinaTextAccess: MarinaViewContentAccessor {
 }
 
-struct Text : View {
+struct Text : View, MarinaTextAccess {
     var content:String
     var body:Never {
         fatalError("Text has no body")
@@ -24,7 +34,7 @@ struct Text : View {
     init<S>(_ content: S) where S : StringProtocol {
         self.content = String(content)
     }
-    func getContent() -> String {
+    func getContent() -> Any {
         return content
     }
 }
@@ -51,13 +61,22 @@ struct EmptyView: View {
     }
 }
 
-struct ConditionalContent<TrueContent, FalseContent> : View where TrueContent : View, FalseContent : View {
+protocol MarinaConditionalContentAccess: MarinaViewContentAccessor {
+}
+
+struct ConditionalContent<TrueContent, FalseContent> : View, MarinaConditionalContentAccess where TrueContent : View, FalseContent : View {
+    var content:Any
     var body:Never {
         fatalError("Conditional view has no body yet!")
     }
     init(trueContent: TrueContent) {
+        self.content = trueContent
     }
     init(falseContent: FalseContent) {
+        self.content = falseContent
+    }
+    func getContent() -> Any {
+        return content
     }
 }
 
@@ -111,7 +130,7 @@ struct MarinaDemo : View {
             if true {
                 Text("Oh hey")
             } else {
-                // buildIf doesn't work yet; we need an else
+                //Text("Not true")
             }
         }
     }
