@@ -28,6 +28,12 @@ protocol MarinaTextAccess: MarinaViewContentAccessor {
 
 struct Color {
     static let primary = Color()
+    static let yellow = Color()
+    static let gray = Color()
+}
+
+struct MarinaFont {
+    static let title = MarinaFont()
 }
 
 struct Text : View, MarinaTextAccess {
@@ -38,10 +44,16 @@ struct Text : View, MarinaTextAccess {
     init<S>(_ content: S) where S : StringProtocol {
         self.content = String(content)
     }
+    init(verbatim content: String) {
+        self.content = String(content)
+    }
     func getContent() -> Any {
         return content
     }
     func color(_ color: Color?) -> Text {
+        return self
+    }
+    func font(_ font: MarinaFont) -> Text {
         return self
     }
 }
@@ -236,7 +248,13 @@ struct Image: View, MarinaImageAccess {
     init(url: String, label: Text) {
         self.content = url
     }
+    init(systemName: String) {
+        self.content = "system_" + systemName
+    }
     func renderingMode(_ renderingMode: RenderingMode) -> Image {
+        return self
+    }
+    func foregroundColor(_ color: Color) -> Image {
         return self
     }
     func getContent() -> Any {
@@ -301,22 +319,43 @@ struct Spacer: View {
     }
 }
 
+struct Button<Label>: View where Label : View {
+    var body:Never {
+        fatalError("Button has no body")
+    }
+    init(action: @escaping () -> Void, label: () -> Label) {
+    }
+}
+
 struct Binding<Value> {
     var value: Value {
         fatalError("no")
     }
 }
 
+typealias Length = Int // todo
+
+extension View {
+    func offset(x: Length = 0, y: Length = 0) -> Self {
+        // no modifiers support yet
+        return self
+    }
+}
+
 protocol BindableObject : AnyObject/*, DynamicViewProperty, Identifiable, _BindableObjectViewProperty*/ {
 }
 
-@_propertyDelegate
+@propertyDelegate
 @dynamicMemberLookup
 struct EnvironmentObject<BindableObjectType> where BindableObjectType : BindableObject {
     var value: BindableObjectType {
-        fatalError("no")
+        get {
+            fatalError("no")
+        }
     }
     subscript<Subject>(dynamicMember keyPath: ReferenceWritableKeyPath<BindableObjectType, Subject>) -> Binding<Subject> {
-        return Binding()
+        get {
+            return Binding()
+        }
     }
 }
