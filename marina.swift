@@ -4,10 +4,12 @@ protocol View {
 }
 
 struct Text : View {
+    var content:String
     var body:Never {
         fatalError("Text has no body")
     }
     init<S>(_ content: S) where S : StringProtocol {
+        self.content = String(content)
     }
 }
 
@@ -67,7 +69,9 @@ struct HStack<Content> : View where Content: View {
     var body:Never {
         fatalError("HStack has no body")
     }
+    var content:Content
     init(@ViewBuilder content: () -> Content) {
+        self.content = content()
     }
 }
 
