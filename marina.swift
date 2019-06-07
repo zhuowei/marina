@@ -1,5 +1,5 @@
 protocol View {
-    associatedtype Body
+    associatedtype Body: View
     var body: Body { get }
 }
 
