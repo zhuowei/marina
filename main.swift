@@ -1,8 +1,8 @@
 struct MarinaDemo : View {
     var body: some View {
         HStack {
-            Text("Oh hello")
-            Text("This doesn't work")
+            Text("https://github.com/zhuowei/marina")
+            Text("This doesn't really work yet")
             if true {
                 Image(url: "hello.jpg", label: Text("Hello"))
             } else {
