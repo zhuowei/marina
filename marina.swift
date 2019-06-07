@@ -3,6 +3,19 @@ protocol View {
     var body: Body { get }
 }
 
+extension Never : View {
+    var body: Never {
+        fatalError("Nobody")
+    }
+}
+
+protocol MarinaViewContentAccessor {
+    func getContent() -> Any
+}
+
+protocol MarinaTextAccess: MarinaViewContentAccessor {
+}
+
 struct Text : View {
     var content:String
     var body:Never {
@@ -11,15 +24,24 @@ struct Text : View {
     init<S>(_ content: S) where S : StringProtocol {
         self.content = String(content)
     }
+    func getContent() -> String {
+        return content
+    }
 }
 
-struct TupleView<T>: View {
+protocol MarinaTupleViewAccess: MarinaViewContentAccessor {
+}
+
+struct TupleView<T>: View, MarinaTupleViewAccess {
     var body:Never {
         fatalError("Tuple view has no body")
     }
     var value:T
     init(_ value:T) {
         self.value = value
+    }
+    func getContent() -> Any {
+        return value
     }
 }
 
@@ -65,13 +87,19 @@ struct ViewBuilder {
     }
 }
 
-struct HStack<Content> : View where Content: View {
+protocol MarinaHStackAccess : MarinaViewContentAccessor {
+}
+
+struct HStack<Content> : View, MarinaHStackAccess where Content: View {
     var body:Never {
         fatalError("HStack has no body")
     }
     var content:Content
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
+    }
+    func getContent() -> Any {
+        return content
     }
 }
 
