@@ -267,6 +267,10 @@ protocol SelectionManager {
 protocol MarinaListAccess: MarinaViewContentAccessor {
 }
 
+enum TitleDisplayMode {
+    case large
+}
+
 struct List<Content> : View, MarinaListAccess where Content : View {
     var body:Never {
         fatalError("NavigationView has no body")
@@ -278,11 +282,8 @@ struct List<Content> : View, MarinaListAccess where Content : View {
     func getContent() -> Any {
         return content
     }
-}
-
-struct Binding<Value> {
-    var value: Value {
-        fatalError("no")
+    func navigationBarTitle(_ title: Text, displayMode: TitleDisplayMode) -> List {
+        return self
     }
 }
 
@@ -294,13 +295,27 @@ struct Toggle<Label>: View where Label : View {
     }
 }
 
+struct Spacer: View {
+    var body:Never {
+        fatalError("Spacer view has no body")
+    }
+}
+
+struct Binding<Value> {
+    var value: Value {
+        fatalError("no")
+    }
+}
+
 protocol BindableObject : AnyObject/*, DynamicViewProperty, Identifiable, _BindableObjectViewProperty*/ {
 }
 
 @_propertyDelegate
 @dynamicMemberLookup
 struct EnvironmentObject<BindableObjectType> where BindableObjectType : BindableObject {
-    var value: BindableObjectType
+    var value: BindableObjectType {
+        fatalError("no")
+    }
     subscript<Subject>(dynamicMember keyPath: ReferenceWritableKeyPath<BindableObjectType, Subject>) -> Binding<Subject> {
         return Binding()
     }
