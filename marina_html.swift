@@ -45,6 +45,16 @@ func render(view: Any, emitter: DOMEmitter) {
             let v = view as! MarinaHStackAccess
             render(view: v.getContent(), emitter: emitter)
             emitter.close("div")
+        case "VStack":
+            emitter.emit("div", ["class": "marina-vstack"])
+            let v = view as! MarinaVStackAccess
+            render(view: v.getContent(), emitter: emitter)
+            emitter.close("div")
+        case "ZStack":
+            emitter.emit("div", ["class": "marina-zstack"])
+            let v = view as! MarinaZStackAccess
+            render(view: v.getContent(), emitter: emitter)
+            emitter.close("div")
         case "Text":
             emitter.emit("div", ["class": "marina-text"])
             let v = view as! MarinaTextAccess

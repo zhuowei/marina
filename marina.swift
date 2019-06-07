@@ -122,6 +122,38 @@ struct HStack<Content> : View, MarinaHStackAccess where Content: View {
     }
 }
 
+protocol MarinaVStackAccess : MarinaViewContentAccessor {
+}
+
+struct VStack<Content> : View, MarinaVStackAccess where Content: View {
+    var body:Never {
+        fatalError("VStack has no body")
+    }
+    var content:Content
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+    func getContent() -> Any {
+        return content
+    }
+}
+
+protocol MarinaZStackAccess : MarinaViewContentAccessor {
+}
+
+struct ZStack<Content> : View, MarinaHStackAccess where Content: View {
+    var body:Never {
+        fatalError("ZStack has no body")
+    }
+    var content:Content
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+    func getContent() -> Any {
+        return content
+    }
+}
+
 struct MarinaDemo : View {
     var body: some View {
         HStack {
