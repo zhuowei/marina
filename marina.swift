@@ -185,6 +185,20 @@ struct ScrollView<Content>: View, MarinaScrollViewAccess where Content: View {
 protocol Identifiable {
     associatedtype ID: Hashable
     associatedtype IdentifiedValue = Self
+    var id: Self.ID { get }
+    var identifiedValue: Self.IdentifiedValue { get }
+}
+
+extension Identifiable where Self == Self.IdentifiedValue {
+    var identifiedValue: Self {
+        self
+    }
+}
+
+extension Identifiable where Self : AnyObject {
+    var id: ObjectIdentifier {
+        ObjectIdentifier(self)
+    }
 }
 
 struct ForEach<Data, Content> : View where Data : RandomAccessCollection, Content : View, Data.Element : Identifiable {
@@ -227,5 +241,67 @@ struct Image: View, MarinaImageAccess {
     }
     func getContent() -> Any {
         return content
+    }
+}
+
+protocol MarinaNavigationViewAccess: MarinaViewContentAccessor {
+}
+
+struct NavigationView<Root> : View, MarinaNavigationViewAccess where Root : View {
+    var body:Never {
+        fatalError("NavigationView has no body")
+    }
+    var content:Root
+    init(@ViewBuilder root: () -> Root) {
+        self.content = root()
+    }
+    func getContent() -> Any {
+        return content
+    }
+}
+
+protocol SelectionManager {
+    associatedtype SelectionValue : Hashable
+}
+
+protocol MarinaListAccess: MarinaViewContentAccessor {
+}
+
+struct List<Content> : View, MarinaListAccess where Content : View {
+    var body:Never {
+        fatalError("NavigationView has no body")
+    }
+    var content:Content
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+    func getContent() -> Any {
+        return content
+    }
+}
+
+struct Binding<Value> {
+    var value: Value {
+        fatalError("no")
+    }
+}
+
+struct Toggle<Label>: View where Label : View {
+    var body:Never {
+        fatalError("Toggle has no body")
+    }
+    init(isOn: Binding<Bool>, label: () -> Label) {
+    }
+}
+
+protocol BindableObject : AnyObject/*, DynamicViewProperty, Identifiable, _BindableObjectViewProperty*/ {
+}
+
+@_propertyDelegate
+@dynamicMemberLookup
+struct EnvironmentObject<BindableObjectType> where BindableObjectType : BindableObject {
+    var value: BindableObjectType
+    subscript<Subject>(dynamicMember keyPath: ReferenceWritableKeyPath<BindableObjectType, Subject>) -> Binding<Subject> {
+        return Binding()
     }
 }
