@@ -30,6 +30,7 @@ struct Color {
     static let primary = Color()
     static let yellow = Color()
     static let gray = Color()
+    static let white = Color()
 }
 
 struct MarinaFont {
@@ -113,6 +114,9 @@ struct ViewBuilder {
     }
     static func buildBlock<C0, C1, C2>(_ arg0: C0, _ arg1: C1, _ arg2: C2) -> TupleView<(C0, C1, C2)> where C0: View, C1: View, C2: View {
         return TupleView((arg0, arg1, arg2))
+    }
+    static func buildBlock<C0, C1, C2, C3>(_ arg0: C0, _ arg1: C1, _ arg2: C2, _ arg3: C3) -> TupleView<(C0, C1, C2, C3)> where C0: View, C1: View, C2: View, C3: View {
+        return TupleView((arg0, arg1, arg2, arg3))
     }
     static func buildIf<Content>(_ arg0: Content?) -> Content? where Content: View {
         return arg0
@@ -266,6 +270,23 @@ struct Image: View, MarinaImageAccess {
     func getContent() -> Any {
         return content
     }
+    func imageScale(_ scale: Scale) -> Image {
+        return self
+    }
+    func clipShape(_ shape: Any) -> Image {
+        return self
+    }
+    func overlay(_ shape: Any) -> Image {
+        return self
+    }
+    func shadow(radius: Length) -> Image {
+        return self
+    }
+    enum Scale {
+        case small
+        case medium
+        case large
+    }
 }
 
 protocol MarinaNavigationViewAccess: MarinaViewContentAccessor {
@@ -330,6 +351,16 @@ struct Button<Label>: View where Label : View {
         fatalError("Button has no body")
     }
     init(action: @escaping () -> Void, label: () -> Label) {
+    }
+}
+
+struct Circle: View {
+    // we implement this as a primitive for now
+    var body:Never {
+        fatalError("Button has no body")
+    }
+    func stroke(_ color: Color, lineWidth: Length) -> Circle {
+        return self
     }
 }
 
