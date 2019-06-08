@@ -34,6 +34,7 @@ struct Color {
 
 struct MarinaFont {
     static let title = MarinaFont()
+    static let subheadline = MarinaFont()
 }
 
 struct Text : View, MarinaTextAccess {
@@ -128,12 +129,17 @@ struct ViewBuilder {
 protocol MarinaHStackAccess : MarinaViewContentAccessor {
 }
 
+struct VerticalAlignment {
+    static let center = VerticalAlignment()
+    static let top = VerticalAlignment()
+}
+
 struct HStack<Content> : View, MarinaHStackAccess where Content: View {
     var body:Never {
         fatalError("HStack has no body")
     }
     var content:Content
-    init(@ViewBuilder content: () -> Content) {
+    init(alignment: VerticalAlignment = .center, @ViewBuilder content: () -> Content) {
         self.content = content()
     }
     func getContent() -> Any {
@@ -333,10 +339,23 @@ struct Binding<Value> {
     }
 }
 
+struct MarinaEdgeSet: OptionSet {
+    let rawValue: Int
+    static let bottom = MarinaEdgeSet(rawValue: 1)
+}
+
 typealias Length = Int // todo
 
 extension View {
     func offset(x: Length = 0, y: Length = 0) -> Self {
+        // no modifiers support yet
+        return self
+    }
+    func padding(_ edges: MarinaEdgeSet, _ length: Length) -> Self {
+        // no modifiers support yet
+        return self
+    }
+    func padding() -> Self {
         // no modifiers support yet
         return self
     }
