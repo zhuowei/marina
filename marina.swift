@@ -277,7 +277,7 @@ struct Image: View, MarinaImageAccess {
         self.content = url
     }
     init(systemName: String) {
-        self.content = "system_" + systemName
+        self.content = "system_" + systemName + ".svg"
     }
     func renderingMode(_ renderingMode: RenderingMode) -> Image {
         return self
