@@ -245,11 +245,19 @@ struct ForEach<Data, Content> : View, MarinaForEachAccess where Data : RandomAcc
     }
 }
 
-struct NavigationButton<Label, Destination> : View where Label : View, Destination : View {
+protocol MarinaNavigationButtonAccess: MarinaViewContentAccessor {
+}
+
+struct NavigationButton<Label, Destination> : View, MarinaNavigationButtonAccess where Label : View, Destination : View {
     var body:Never {
         fatalError("NavigationButton has no body")
     }
+    var content:Label
     init(destination: Destination, isDetail: Bool = true, onTrigger: @escaping () -> Bool = { true }, label: () -> Label) {
+        self.content = label()
+    }
+    func getContent() -> Any {
+        return content
     }
 }
 
@@ -357,8 +365,9 @@ struct Toggle<Label>: View, MarinaToggleAccess where Label : View {
         return content
     }
 }
-
-struct Spacer: View {
+protocol MarinaSpacerAccess {
+}
+struct Spacer: View, MarinaSpacerAccess {
     var body:Never {
         fatalError("Spacer view has no body")
     }

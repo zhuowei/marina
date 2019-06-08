@@ -33,7 +33,7 @@ class DOMEmitter {
     }
 }
 func render(view: Any, emitter: DOMEmitter) {
-    print("Rendering", view)
+    //print("Rendering", view)
     if String(describing: view) == "nil" {
         return
     }
@@ -60,6 +60,16 @@ func render(view: Any, emitter: DOMEmitter) {
         for d in data {
             render(view: d, emitter: emitter)
         }
+        return
+    }
+    if let v = view as? MarinaNavigationButtonAccess {
+        emitter.emit("div", ["class": "marina-navigationbutton"])
+        render(view: v.getContent(), emitter: emitter)
+        emitter.close("div")
+        return
+    }
+    if let _ = view as? MarinaSpacerAccess {
+        // nothing
         return
     }
     let className = classNameRemovingGenerics(view)
@@ -101,7 +111,7 @@ func render(view: Any, emitter: DOMEmitter) {
             render(view: v.getContent(), emitter: emitter)
         case "Image":
             let v = view as! MarinaImageAccess
-            emitter.emit("img", ["class": "marina-text", "src": v.getContent() as! String])
+            emitter.emit("img", ["class": "marina-image", "src": v.getContent() as! String])
         case "EmptyView":
             do {}
         default:
