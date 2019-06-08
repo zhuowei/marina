@@ -223,7 +223,10 @@ extension Identifiable where Self : AnyObject {
     }
 }
 
-struct ForEach<Data, Content> : View where Data : RandomAccessCollection, Content : View, Data.Element : Identifiable {
+protocol MarinaForEachAccess: MarinaViewContentAccessor {
+}
+
+struct ForEach<Data, Content> : View, MarinaForEachAccess where Data : RandomAccessCollection, Content : View, Data.Element : Identifiable {
     var body:Never {
         fatalError("ForEach has no body")
     }
@@ -232,6 +235,13 @@ struct ForEach<Data, Content> : View where Data : RandomAccessCollection, Conten
     init(_ data: Data, content: @escaping (Data.Element.IdentifiedValue) -> Content) {
         self.data = data
         self.content = content
+    }
+    func getContent() -> Any {
+        var out:[Content] = []
+        for d in data {
+            out += [content(d.identifiedValue)]
+        }
+        return out
     }
 }
 
@@ -318,7 +328,7 @@ enum TitleDisplayMode {
 
 struct List<Content> : View, MarinaListAccess where Content : View {
     var body:Never {
-        fatalError("NavigationView has no body")
+        fatalError("List has no body")
     }
     var content:Content
     init(@ViewBuilder content: () -> Content) {
@@ -332,11 +342,19 @@ struct List<Content> : View, MarinaListAccess where Content : View {
     }
 }
 
-struct Toggle<Label>: View where Label : View {
+protocol MarinaToggleAccess: MarinaViewContentAccessor {
+}
+
+struct Toggle<Label>: View, MarinaToggleAccess where Label : View {
     var body:Never {
         fatalError("Toggle has no body")
     }
+    var content:Label
     init(isOn: Binding<Bool>, label: () -> Label) {
+        self.content = label()
+    }
+    func getContent() -> Any {
+        return content
     }
 }
 
@@ -395,12 +413,14 @@ extension View {
 protocol BindableObject : AnyObject/*, DynamicViewProperty, Identifiable, _BindableObjectViewProperty*/ {
 }
 
+var globalEnvironmentObject:BindableObject?
+
 @propertyDelegate
 @dynamicMemberLookup
 struct EnvironmentObject<BindableObjectType> where BindableObjectType : BindableObject {
     var value: BindableObjectType {
         get {
-            fatalError("no")
+            globalEnvironmentObject as! BindableObjectType
         }
     }
     subscript<Subject>(dynamicMember keyPath: ReferenceWritableKeyPath<BindableObjectType, Subject>) -> Binding<Subject> {

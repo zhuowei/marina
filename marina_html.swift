@@ -33,8 +33,33 @@ class DOMEmitter {
     }
 }
 func render(view: Any, emitter: DOMEmitter) {
-    //print("Rendering", view)
+    print("Rendering", view)
     if String(describing: view) == "nil" {
+        return
+    }
+    if let v = view as? MarinaNavigationViewAccess {
+        emitter.emit("div", ["class": "marina-navigationview"])
+        render(view: v.getContent(), emitter: emitter)
+        emitter.close("div")
+        return
+    }
+    if let v = view as? MarinaListAccess {
+        emitter.emit("div", ["class": "marina-list"])
+        render(view: v.getContent(), emitter: emitter)
+        emitter.close("div")
+        return
+    }
+    if let v = view as? MarinaToggleAccess {
+        emitter.emit("div", ["class": "marina-toggle"])
+        render(view: v.getContent(), emitter: emitter)
+        emitter.close("div")
+        return
+    }
+    if let v = view as? MarinaForEachAccess {
+        let data = v.getContent() as! [Any]
+        for d in data {
+            render(view: d, emitter: emitter)
+        }
         return
     }
     let className = classNameRemovingGenerics(view)
